@@ -1,9 +1,18 @@
 Write a program that provides both encryption and decryption operations to an affine cipher
+m = 0...n-1 (and mapping from a letter of an alphabet of size n)
+Enc(m) = am+b mod n
+b = random integers with gcd(a,b) = 1
+a,b = private encryption keys 
 
-#include <stdio.h>()
+#include <stdio.h>
+
+int main()
 {
+int m;
+char str[1000];
 
-
+printf("Please enter plaintext:/n");
+gets(str);
 
 
 
