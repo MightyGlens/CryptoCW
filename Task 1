@@ -1,27 +1,129 @@
-Write a program that provides both encryption and decryption operations to an affine cipher
-m = 0...n-1 (and mapping from a letter of an alphabet of size n)
-Enc(m) = am+b mod n
-b = random integers with gcd(a,b) = 1
-a,b = private encryption keys 
-
-#include <stdio.h>
-
-int main()
-{
-int m;
-char str[1000];
-
-printf("Please enter plaintext:/n");
-gets(str);
+import string
 
 
+def affine_encrypt():
+    message = []
+    message = input("please enter plaintext\n")
+    a_key = int(input("please input alpha key\n"))
+    b_key = int(input("please input beta key\n"))
+
+    # Maps letter to numbers (A=0, B=1 etc.)
+    letter_mapping = {}
+    counter = 0
+    for i in string.ascii_uppercase:
+        letter_mapping[i] = counter
+        counter += 1
+
+    # Converts message to upper case
+    message = message.upper()
+
+    # Output of encrypted message
+    encrypted_message = ""
+
+    # Go through each letter in the message
+    for character in message:
+
+        # Check if message character is A to Z
+        if character in letter_mapping:
+
+            # am+b mod n (maths bit)
+            encrypted_letter = ((a_key * letter_mapping[character]) + b_key) % 26
+
+            # Convert number back to letter and add it to the encrypted message
+            for key, value in letter_mapping.items():
+                if value == encrypted_letter:
+                    encrypted_message += key
 
 
 
+        # Letter is not A to Z, just add it to the encrypted message
+        else:
+            encrypted_message += character
+
+    return encrypted_message
+
+def affine_decrypt(a_key, b_key, ciphertext):
+    alphabet_size = 26
+    inv_a = pow(a_key, -1, alphabet_size)
+
+    # Maps letter to numbers (A=0, B=1 etc.)
+    letter_mapping = {}
+    counter = 0
+    for i in string.ascii_uppercase:
+        letter_mapping[i] = counter
+        counter += 1
+
+    # Converts ciphertext to upper case
+    ciphertext = ciphertext.upper()
+
+    # Output of plaintext
+    plaintext = ""
+
+    # Go through each letter in the ciphertext
+    for character in ciphertext:
+
+        # Check if ciphertext character is A to Z
+        if character in letter_mapping:
+            # m = a' * (C-b_key)  mod n (maths bit)
+            decrypted_letter = (inv_a * (letter_mapping[character] - b_key)) % 26
+
+            # Convert number back to letter and add it to the encrypted message
+            for key, value in letter_mapping.items():
+                if value == decrypted_letter:
+                    plaintext += key
+
+                # print("Decrypting >>>:\n", plaintext)
+                # A test function that has been left in to show how we got to this point
+
+        # Letter is not A to Z, just add it to the encrypted message
+        else:
+            plaintext += character
+
+    return plaintext
 
 
+def bruteforce_decrypt():
+    ciphertext = []
+    # Gathers required information for decryption
+    ciphertext = (input("please enter ciphertext\n"))
+    for a_key in range(0, 26):  # This will go through every a_key that satisfies the range 0 - 26
+        if (a_key % 2 != 0) and (a_key != 13):  # However only if it is not even, or the number 13
+            for b_key in range(0, 26):
+                print("Trying Alpha Key:", a_key, "Trying Beta Key:", b_key)
+                print(affine_decrypt(a_key, b_key, ciphertext))
 
+# User Menu (tested and works)
+def affinecoursework():
+    menu = {}
+    menu['1'] = "affine encryption."
+    menu['2'] = "affine decryption (with keys)."
+    menu['3'] = "affine decryption (brute force)."
+    menu['4'] = "Exit"
+    while True:
+        options = menu.keys()
+        for entry in options:
+            print(entry, menu[entry])
 
+        selection = input("Please Select:")
+        if selection == '1':
+            print("affine encryption selected")
+            print(affine_encrypt())
+            break
+        elif selection == '2':
+            print("affine decryption with keys selected ")
+            ciphertext = []
+            # Gathers required information for decryption
+            ciphertext = (input("please enter ciphertext\n"))
+            a_key = int(input("please input alpha key\n"))
+            b_key = int(input("please input beta key\n"))
+            print(affine_decrypt(a_key, b_key, ciphertext))
+            break
 
+        elif selection == '3':
+            print("affine decryption via brute force selected")
+            print(bruteforce_decrypt())
+            break
+        elif selection == '4':
+            break
 
-}
+affinecoursework()
