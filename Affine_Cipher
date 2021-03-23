@@ -33,14 +33,12 @@ def affine_encrypt():
             for key, value in letter_mapping.items():
                 if value == encrypted_letter:
                     encrypted_message += key
-
-
-
         # Letter is not A to Z, just add it to the encrypted message
         else:
             encrypted_message += character
 
     return encrypted_message
+
 
 def affine_decrypt(a_key, b_key, ciphertext):
     alphabet_size = 26
@@ -82,18 +80,39 @@ def affine_decrypt(a_key, b_key, ciphertext):
     return plaintext
 
 
+def dictionary_check(plaintext):
+    affine_dictionary = {}
+    affine_dictionary = open(r"Affine_Dictionary.txt", "rt")  # Opens the text file 'Affine_Dictionary'
+    count = 0  # Initilising a count to count matches between my word list and the plaintext.
+    for word in affine_dictionary:  # The for loop, loops through the dictionary looking for matches
+        if word.strip() in plaintext.lower():  # word.strip is stripping each new line character from the word, and checking if it is in a lower case version of the plaintext
+            count += 1  # if true adds one to count
+    affine_dictionary.close()  # closes the previously open file, as it is bad practice to leave it open
+    return count
+
+
 def bruteforce_decrypt():
-    ciphertext = []
+    decrypted_list = []  # initialise the list decrypted_list
     # Gathers required information for decryption
-    ciphertext = (input("please enter ciphertext\n"))
+    ciphertext = input("please enter ciphertext\n")
     for a_key in range(0, 26):  # This will go through every a_key that satisfies the range 0 - 26
         if (a_key % 2 != 0) and (a_key != 13):  # However only if it is not even, or the number 13
-            for b_key in range(0, 26):
-                print("Trying Alpha Key:", a_key, "Trying Beta Key:", b_key)
-                print(affine_decrypt(a_key, b_key, ciphertext))
+            for b_key in range(0, 26): # This is a nested loop through b_key
+                #  print("Trying Alpha Key:", a_key, "Trying Beta Key:", b_key) - used to debug the bruteforce function
+                decrypted = affine_decrypt(a_key, b_key, ciphertext) # storing the plaintext as a variable
+                count = dictionary_check(decrypted) #  storing the count of plaintext:dictionary check as a variable
+                decrypted_list.append((decrypted, count, a_key, b_key)) # appending a tuple of plaintext, count, a_key and b_key to the decrypted list
+    sorted_by_count = sorted(decrypted_list, key=lambda ele: ele[1], reverse=True) #sorting the decrypted list by count, highest to lowest
+    for ele in sorted_by_count:
+        if ele[1] > 1: # if count = 1 or 0 do not print, so this shows only the most likely options
+            print(ele)
+    return
+
 
 # User Menu (tested and works)
-def affinecoursework():
+
+
+def affine_coursework():
     menu = {}
     menu['1'] = "affine encryption."
     menu['2'] = "affine decryption (with keys)."
@@ -121,9 +140,10 @@ def affinecoursework():
 
         elif selection == '3':
             print("affine decryption via brute force selected")
-            print(bruteforce_decrypt())
+            bruteforce_decrypt()
             break
         elif selection == '4':
             break
 
-affinecoursework()
+
+affine_coursework()
